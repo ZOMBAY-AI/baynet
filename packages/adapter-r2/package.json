@@ -1,5 +1,5 @@
 {
-  "name": "@baynet/adapter-r2",
+  "name": "@zombay/baynet-r2",
   "version": "0.1.0",
   "description": "Cloudflare R2 storage adapter for BayNet SDK",
   "repository": { "type": "git", "url": "https://github.com/ZOMBAY-AI/baynet.git", "directory": "packages/adapter-r2" },
@@ -22,10 +22,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@baynet/sdk": "^0.1.0"
+    "@zombay/baynet": "^0.1.0"
   },
   "devDependencies": {
-    "@baynet/tsconfig": "*",
+    "@zombay/baynet-tsconfig": "*",
     "@cloudflare/workers-types": "^4.20250320.0",
     "typescript": "^5.8.0",
     "vitest": "^4.1.0"

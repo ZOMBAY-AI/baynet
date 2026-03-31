@@ -1,10 +1,10 @@
 /**
- * Tests that @baynet/react exports all expected components and types.
+ * Tests that @zombay/baynet-react exports all expected components and types.
  */
 
 import { describe, it, expect } from "vitest";
 
-describe("@baynet/react exports", () => {
+describe("@zombay/baynet-react exports", () => {
   it("exports ModerationDashboard", async () => {
     const mod = await import("../index.js");
     expect(mod.ModerationDashboard).toBeDefined();

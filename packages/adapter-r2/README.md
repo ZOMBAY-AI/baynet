@@ -1,4 +1,4 @@
-# @baynet/adapter-r2
+# @zombay/baynet-r2
 
 Cloudflare R2 storage adapter for [BayNet SDK](https://github.com/ZOMBAY-AI/baynet).
 
@@ -7,14 +7,14 @@ Wraps an R2 bucket binding to implement the `StorageAdapter` interface.
 ## Install
 
 ```bash
-npm install @baynet/adapter-r2 @baynet/sdk
+npm install @zombay/baynet-r2 @zombay/baynet
 ```
 
 ## Usage
 
 ```typescript
-import { BayNet } from "@baynet/sdk";
-import { R2StorageAdapter } from "@baynet/adapter-r2";
+import { BayNet } from "@zombay/baynet";
+import { R2StorageAdapter } from "@zombay/baynet-r2";
 
 const storage = new R2StorageAdapter({
   bucket: env.R2_ASSETS,

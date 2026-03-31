@@ -20,7 +20,7 @@ import type {
   DetectionStats,
   AnnotationStats,
   ReviewStatus,
-} from "@baynet/sdk";
+} from "@zombay/baynet";
 import * as schema from "./schema.js";
 
 export interface D1AdapterConfig {

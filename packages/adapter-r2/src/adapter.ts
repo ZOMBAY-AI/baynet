@@ -6,7 +6,7 @@
  * a configurable public URL prefix.
  */
 
-import type { StorageAdapter } from "@baynet/sdk";
+import type { StorageAdapter } from "@zombay/baynet";
 
 export interface R2AdapterConfig {
   /** R2 bucket binding */

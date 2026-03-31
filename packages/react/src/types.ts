@@ -1,5 +1,5 @@
 /**
- * Types used by @baynet/react components.
+ * Types used by @zombay/baynet-react components.
  *
  * These are the view-model types — they correspond to the SDK's domain types
  * but are shaped for UI consumption (e.g., blurredUrl instead of blurredKey).

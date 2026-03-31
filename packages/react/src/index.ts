@@ -1,8 +1,8 @@
 /**
- * @baynet/react — React dashboard components for BayNet content moderation.
+ * @zombay/baynet-react — React dashboard components for BayNet content moderation.
  *
  * Usage:
- *   import { ModerationDashboard } from "@baynet/react";
+ *   import { ModerationDashboard } from "@zombay/baynet-react";
  *
  *   <ModerationDashboard
  *     dataSource={{

@@ -1,5 +1,5 @@
 {
-  "name": "@baynet/react",
+  "name": "@zombay/baynet-react",
   "version": "0.1.0",
   "description": "React dashboard components for BayNet content moderation",
   "repository": {
@@ -37,13 +37,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@baynet/sdk": "^0.1.0"
+    "@zombay/baynet": "^0.1.0"
   },
   "peerDependencies": {
     "react": ">=18.0.0"
   },
   "devDependencies": {
-    "@baynet/tsconfig": "*",
+    "@zombay/baynet-tsconfig": "*",
     "@types/react": "^19.0.0",
     "react": "^19.0.0",
     "typescript": "^5.8.0",

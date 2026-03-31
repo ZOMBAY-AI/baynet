@@ -1,10 +1,10 @@
 /**
- * @baynet/adapter-d1 — Cloudflare D1 database adapter for BayNet SDK.
+ * @zombay/baynet-d1 — Cloudflare D1 database adapter for BayNet SDK.
  *
  * Usage:
- *   import { D1DatabaseAdapter } from "@baynet/adapter-d1";
+ *   import { D1DatabaseAdapter } from "@zombay/baynet-d1";
  *   import { drizzle } from "drizzle-orm/d1";
- *   import * as schema from "@baynet/adapter-d1/schema";
+ *   import * as schema from "@zombay/baynet-d1/schema";
  *
  *   const db = drizzle(env.DB, { schema });
  *   const database = new D1DatabaseAdapter({ db });

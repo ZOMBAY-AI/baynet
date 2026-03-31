@@ -1,5 +1,5 @@
 {
-  "name": "@baynet/sdk",
+  "name": "@zombay/baynet",
   "version": "0.1.0",
   "description": "Open-source HITL content moderation + AI training data pipeline",
   "repository": {
@@ -45,7 +45,7 @@
     "nanoid": "^5.1.0"
   },
   "devDependencies": {
-    "@baynet/tsconfig": "*",
+    "@zombay/baynet-tsconfig": "*",
     "@types/node": "^25.5.0",
     "typescript": "^5.8.0",
     "vitest": "^4.1.0"

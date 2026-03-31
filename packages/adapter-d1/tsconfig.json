@@ -1,5 +1,5 @@
 {
-  "extends": "@baynet/tsconfig/base.json",
+  "extends": "@zombay/baynet-tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src"

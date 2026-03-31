@@ -1,4 +1,4 @@
-# @baynet/sdk
+# @zombay/baynet
 
 Open-source HITL content moderation + AI training data pipeline.
 
@@ -7,17 +7,17 @@ BayNet bridges automated NSFW detection and human oversight. It persists detecti
 ## Install
 
 ```bash
-npm install @baynet/sdk
+npm install @zombay/baynet
 ```
 
 ## Quick Start
 
 ```typescript
-import { BayNet, nudenetBackend, simpleAuth } from "@baynet/sdk";
+import { BayNet, nudenetBackend, simpleAuth } from "@zombay/baynet";
 
 const baynet = new BayNet({
-  database: yourDatabaseAdapter,  // @baynet/adapter-d1, @baynet/adapter-postgres, or custom
-  storage: yourStorageAdapter,    // @baynet/adapter-r2, @baynet/adapter-s3, or custom
+  database: yourDatabaseAdapter,  // @zombay/baynet-d1, @zombay/baynet-postgres, or custom
+  storage: yourStorageAdapter,    // @zombay/baynet-r2, @zombay/baynet-s3, or custom
   auth: simpleAuth({ isReviewer: (id) => ADMIN_IDS.includes(id) }),
   backends: [nudenetBackend({ url: "https://your-nudenet-service.com" })],
   hooks: {
@@ -59,10 +59,10 @@ BayNet uses pluggable adapters. Implement `DatabaseAdapter`, `StorageAdapter`, a
 
 | Package | Platform |
 |---------|----------|
-| `@baynet/adapter-d1` | Cloudflare D1 (Drizzle ORM) |
-| `@baynet/adapter-r2` | Cloudflare R2 |
-| `@baynet/adapter-postgres` | PostgreSQL (coming soon) |
-| `@baynet/adapter-s3` | AWS S3 (coming soon) |
+| `@zombay/baynet-d1` | Cloudflare D1 (Drizzle ORM) |
+| `@zombay/baynet-r2` | Cloudflare R2 |
+| `@zombay/baynet-postgres` | PostgreSQL (coming soon) |
+| `@zombay/baynet-s3` | AWS S3 (coming soon) |
 
 ## Detection Backends
 

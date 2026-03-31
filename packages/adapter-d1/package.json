@@ -1,5 +1,5 @@
 {
-  "name": "@baynet/adapter-d1",
+  "name": "@zombay/baynet-d1",
   "version": "0.1.0",
   "description": "Cloudflare D1 database adapter for BayNet SDK",
   "repository": { "type": "git", "url": "https://github.com/ZOMBAY-AI/baynet.git", "directory": "packages/adapter-d1" },
@@ -26,11 +26,11 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@baynet/sdk": "^0.1.0",
+    "@zombay/baynet": "^0.1.0",
     "drizzle-orm": "^0.39.0"
   },
   "devDependencies": {
-    "@baynet/tsconfig": "*",
+    "@zombay/baynet-tsconfig": "*",
     "typescript": "^5.8.0",
     "vitest": "^4.1.0"
   },

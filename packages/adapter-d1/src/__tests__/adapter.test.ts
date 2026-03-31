@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { D1DatabaseAdapter } from "../adapter.js";
-import type { InsertDetection, InsertAnnotation, InsertAuditEntry, InsertExport } from "@baynet/sdk";
+import type { InsertDetection, InsertAnnotation, InsertAuditEntry, InsertExport } from "@zombay/baynet";
 
 // ─── Mock Drizzle DB ───────────────────────────────────────────────────────
 

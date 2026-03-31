@@ -10,23 +10,23 @@ Nothing like this exists as an integrated open-source tool. The individual piece
 
 | Package | Description | npm |
 |---------|-------------|-----|
-| [`@baynet/sdk`](packages/sdk) | Core SDK — detection pipeline, review queue, COCO export, audit logging | [![npm](https://img.shields.io/npm/v/@baynet/sdk)](https://www.npmjs.com/package/@baynet/sdk) |
-| [`@baynet/adapter-d1`](packages/adapter-d1) | Cloudflare D1 database adapter (Drizzle ORM) | [![npm](https://img.shields.io/npm/v/@baynet/adapter-d1)](https://www.npmjs.com/package/@baynet/adapter-d1) |
-| [`@baynet/adapter-r2`](packages/adapter-r2) | Cloudflare R2 storage adapter | [![npm](https://img.shields.io/npm/v/@baynet/adapter-r2)](https://www.npmjs.com/package/@baynet/adapter-r2) |
-| [`@baynet/react`](packages/react) | React dashboard components (review queue, SVG annotator, stats) | [![npm](https://img.shields.io/npm/v/@baynet/react)](https://www.npmjs.com/package/@baynet/react) |
+| [`@zombay/baynet`](packages/sdk) | Core SDK — detection pipeline, review queue, COCO export, audit logging | [![npm](https://img.shields.io/npm/v/@zombay/baynet)](https://www.npmjs.com/package/@zombay/baynet) |
+| [`@zombay/baynet-d1`](packages/adapter-d1) | Cloudflare D1 database adapter (Drizzle ORM) | [![npm](https://img.shields.io/npm/v/@zombay/baynet-d1)](https://www.npmjs.com/package/@zombay/baynet-d1) |
+| [`@zombay/baynet-r2`](packages/adapter-r2) | Cloudflare R2 storage adapter | [![npm](https://img.shields.io/npm/v/@zombay/baynet-r2)](https://www.npmjs.com/package/@zombay/baynet-r2) |
+| [`@zombay/baynet-react`](packages/react) | React dashboard components (review queue, SVG annotator, stats) | [![npm](https://img.shields.io/npm/v/@zombay/baynet-react)](https://www.npmjs.com/package/@zombay/baynet-react) |
 
 ## Quick Start
 
 ```bash
-npm install @baynet/sdk @baynet/adapter-d1 @baynet/adapter-r2
+npm install @zombay/baynet @zombay/baynet-d1 @zombay/baynet-r2
 ```
 
 ```typescript
-import { BayNet, nudenetBackend, simpleAuth } from "@baynet/sdk";
-import { D1DatabaseAdapter } from "@baynet/adapter-d1";
-import { R2StorageAdapter } from "@baynet/adapter-r2";
+import { BayNet, nudenetBackend, simpleAuth } from "@zombay/baynet";
+import { D1DatabaseAdapter } from "@zombay/baynet-d1";
+import { R2StorageAdapter } from "@zombay/baynet-r2";
 import { drizzle } from "drizzle-orm/d1";
-import * as schema from "@baynet/adapter-d1/schema";
+import * as schema from "@zombay/baynet-d1/schema";
 
 const baynet = new BayNet({
   database: new D1DatabaseAdapter({ db: drizzle(env.DB, { schema }) }),
@@ -71,7 +71,7 @@ Content Pipeline
   +-- Active learning priority scoring
   |     (uncertain predictions reviewed first)
   |
-  +-- Human Review Dashboard (@baynet/react)
+  +-- Human Review Dashboard (@zombay/baynet-react)
   |     SVG annotator: confirm / false positive / draw missed regions
   |
   +-- COCO Export
@@ -83,13 +83,13 @@ Content Pipeline
 BayNet uses a pluggable adapter pattern — bring your own database, storage, and auth:
 
 ```
-@baynet/sdk (core)
-  ├── DatabaseAdapter  ←  @baynet/adapter-d1, @baynet/adapter-postgres
-  ├── StorageAdapter   ←  @baynet/adapter-r2, @baynet/adapter-s3
+@zombay/baynet (core)
+  ├── DatabaseAdapter  ←  @zombay/baynet-d1, @zombay/baynet-postgres
+  ├── StorageAdapter   ←  @zombay/baynet-r2, @zombay/baynet-s3
   ├── AuthAdapter      ←  simpleAuth() or custom
   └── DetectionBackend ←  nudenetBackend(), geminiSafetyBackend(), custom
 
-@baynet/react (dashboard)
+@zombay/baynet-react (dashboard)
   └── BayNetDataSource ←  your API routes
 ```
 
@@ -118,16 +118,16 @@ BayNet uses a pluggable adapter pattern — bring your own database, storage, an
 
 | Adapter | Status |
 |---------|--------|
-| `@baynet/adapter-d1` | Published |
-| `@baynet/adapter-postgres` | Coming soon |
+| `@zombay/baynet-d1` | Published |
+| `@zombay/baynet-postgres` | Coming soon |
 | Custom | Implement `DatabaseAdapter` |
 
 ### Storage
 
 | Adapter | Status |
 |---------|--------|
-| `@baynet/adapter-r2` | Published |
-| `@baynet/adapter-s3` | Coming soon |
+| `@zombay/baynet-r2` | Published |
+| `@zombay/baynet-s3` | Coming soon |
 | Custom | Implement `StorageAdapter` |
 
 ## NudeNet Microservice

@@ -1,4 +1,4 @@
-# @baynet/adapter-d1
+# @zombay/baynet-d1
 
 Cloudflare D1 database adapter for [BayNet SDK](https://github.com/ZOMBAY-AI/baynet).
 
@@ -7,15 +7,15 @@ Uses [Drizzle ORM](https://orm.drizzle.team/) to implement the `DatabaseAdapter`
 ## Install
 
 ```bash
-npm install @baynet/adapter-d1 @baynet/sdk drizzle-orm
+npm install @zombay/baynet-d1 @zombay/baynet drizzle-orm
 ```
 
 ## Usage
 
 ```typescript
-import { BayNet } from "@baynet/sdk";
-import { D1DatabaseAdapter } from "@baynet/adapter-d1";
-import * as schema from "@baynet/adapter-d1/schema";
+import { BayNet } from "@zombay/baynet";
+import { D1DatabaseAdapter } from "@zombay/baynet-d1";
+import * as schema from "@zombay/baynet-d1/schema";
 import { drizzle } from "drizzle-orm/d1";
 
 // In your Cloudflare Worker
@@ -38,7 +38,7 @@ export default {
 The adapter provides Drizzle table definitions (`baynet_detections`, `baynet_annotations`, `baynet_exports`, `baynet_audit_log`) and a raw SQL string for non-Drizzle setups:
 
 ```typescript
-import { CREATE_TABLES_SQL } from "@baynet/adapter-d1";
+import { CREATE_TABLES_SQL } from "@zombay/baynet-d1";
 
 // Run against your D1 database to create all tables
 await env.DB.exec(CREATE_TABLES_SQL);

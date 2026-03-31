@@ -1,4 +1,4 @@
-# @baynet/react
+# @zombay/baynet-react
 
 React dashboard components for [BayNet](https://github.com/ZOMBAY-AI/baynet) content moderation.
 
@@ -7,13 +7,13 @@ Provides a complete HITL moderation UI with review queue, SVG bounding box annot
 ## Install
 
 ```bash
-npm install @baynet/react @baynet/sdk react
+npm install @zombay/baynet-react @zombay/baynet react
 ```
 
 ## Quick Start
 
 ```tsx
-import { ModerationDashboard } from "@baynet/react";
+import { ModerationDashboard } from "@zombay/baynet-react";
 
 function App() {
   return (

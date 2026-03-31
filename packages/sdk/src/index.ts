@@ -1,8 +1,8 @@
 /**
- * @baynet/sdk — Open-source HITL content moderation + AI training data pipeline.
+ * @zombay/baynet — Open-source HITL content moderation + AI training data pipeline.
  *
  * Usage:
- *   import { BayNet, nudenetBackend } from "@baynet/sdk";
+ *   import { BayNet, nudenetBackend } from "@zombay/baynet";
  *
  *   const baynet = new BayNet({
  *     database: yourDatabaseAdapter,
