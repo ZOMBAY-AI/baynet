@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { calculateReviewPriority } from "../priority.js";
 import type { DetectedRegion } from "../types.js";
 
-function region(cls: string, score: number, category = "nudity" as const): DetectedRegion {
+function region(cls: string, score: number, category: DetectedRegion["category"] = "nudity"): DetectedRegion {
   return { class: cls, score, box: [100, 100, 200, 200], category, backendId: "test" };
 }
 

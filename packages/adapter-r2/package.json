@@ -1,0 +1,29 @@
+{
+  "name": "@baynet/adapter-r2",
+  "version": "0.1.0",
+  "description": "Cloudflare R2 storage adapter for BayNet SDK",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@baynet/sdk": "*"
+  },
+  "devDependencies": {
+    "@baynet/tsconfig": "*",
+    "@cloudflare/workers-types": "^4.20250320.0",
+    "typescript": "^5.8.0",
+    "vitest": "^4.1.0"
+  },
+  "license": "MIT"
+}
