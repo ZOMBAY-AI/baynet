@@ -2,185 +2,153 @@
 
 **Open-source HITL content moderation + AI training data pipeline**
 
-BayNet bridges the gap between automated NSFW detection and human oversight. It persists detection results that existing tools discard, builds a human review queue on top of them, and exports human corrections as labeled training data for model improvement.
+BayNet bridges automated NSFW detection and human oversight. It persists detection results that existing tools discard, builds a human review queue, and exports human corrections as labeled training data (COCO format) for model improvement.
 
 Nothing like this exists as an integrated open-source tool. The individual pieces (NudeNet, Label Studio, active learning frameworks) exist in isolation, but nobody has wired them together for content moderation. BayNet fills that gap.
 
----
+## Packages
 
-## What It Does
+| Package | Description | npm |
+|---------|-------------|-----|
+| [`@baynet/sdk`](packages/sdk) | Core SDK — detection pipeline, review queue, COCO export, audit logging | [![npm](https://img.shields.io/npm/v/@baynet/sdk)](https://www.npmjs.com/package/@baynet/sdk) |
+| [`@baynet/adapter-d1`](packages/adapter-d1) | Cloudflare D1 database adapter (Drizzle ORM) | [![npm](https://img.shields.io/npm/v/@baynet/adapter-d1)](https://www.npmjs.com/package/@baynet/adapter-d1) |
+| [`@baynet/adapter-r2`](packages/adapter-r2) | Cloudflare R2 storage adapter | [![npm](https://img.shields.io/npm/v/@baynet/adapter-r2)](https://www.npmjs.com/package/@baynet/adapter-r2) |
+| [`@baynet/react`](packages/react) | React dashboard components (review queue, SVG annotator, stats) | [![npm](https://img.shields.io/npm/v/@baynet/react)](https://www.npmjs.com/package/@baynet/react) |
 
-```
-Content Generation Pipeline
-  |
-  +-- NudeNet detects regions --> persist detections + blurred images
-  |
-  +-- Active learning scores review priority (low confidence = review first)
-  |
-  +-- Admin Review Dashboard
-       |-- Blurred thumbnail grid (originals never exposed)
-       |-- SVG bounding box annotator (confirm / false positive / draw missed)
-       |-- Per-region notes + class correction
-       +-- Export --> COCO/YOLO labeled dataset for model retraining
+## Quick Start
+
+```bash
+npm install @baynet/sdk @baynet/adapter-d1 @baynet/adapter-r2
 ```
 
-**Detection** -- NudeNet analyzes frames, returns bounding boxes with class labels and confidence scores. BayNet persists this data instead of discarding it after blur.
+```typescript
+import { BayNet, nudenetBackend, simpleAuth } from "@baynet/sdk";
+import { D1DatabaseAdapter } from "@baynet/adapter-d1";
+import { R2StorageAdapter } from "@baynet/adapter-r2";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "@baynet/adapter-d1/schema";
 
-**Review** -- Human moderators see blurred thumbnails sorted by priority. They confirm, reject, or correct NudeNet's predictions using an SVG bounding box annotator.
+const baynet = new BayNet({
+  database: new D1DatabaseAdapter({ db: drizzle(env.DB, { schema }) }),
+  storage: new R2StorageAdapter({ bucket: env.R2_ASSETS }),
+  auth: simpleAuth({ isReviewer: (id) => ADMIN_IDS.includes(id) }),
+  backends: [nudenetBackend({ url: env.NUDENET_URL })],
+});
 
-**Training** -- Human corrections are exported as COCO-format labeled datasets. False positives are removed, missed detections are added, bounding boxes are corrected. This data feeds back into NudeNet fine-tuning, closing the active learning loop.
+// Detect and persist
+const { detectionId } = await baynet.detectAndPersist({
+  imageBase64: frameBase64,
+  mimeType: "image/png",
+  sourceType: "preview",
+});
+
+// Review queue
+const queue = await baynet.getReviewQueue({ status: "pending" });
+
+// Submit human review
+await baynet.submitReview({
+  detectionId: "det_123",
+  reviewerId: "admin_1",
+  status: "corrected",
+  annotations: [
+    { type: "false_positive", regionIndex: 0 },
+    { type: "missed_detection", correctedClass: "BUTTOCKS_EXPOSED", correctedBox: [100, 200, 50, 60] },
+  ],
+});
+
+// Export COCO training data
+const { manifest } = await baynet.exportCoco({ exporterId: "admin_1" });
+```
+
+## How It Works
+
+```
+Content Pipeline
+  |
+  +-- Detection backends (NudeNet, Gemini Safety, custom)
+  |     detect regions --> persist detections + images
+  |
+  +-- Active learning priority scoring
+  |     (uncertain predictions reviewed first)
+  |
+  +-- Human Review Dashboard (@baynet/react)
+  |     SVG annotator: confirm / false positive / draw missed regions
+  |
+  +-- COCO Export
+        labeled training data for model retraining
+```
 
 ## Architecture
 
+BayNet uses a pluggable adapter pattern — bring your own database, storage, and auth:
+
 ```
-+------------------+     +------------------+     +------------------+
-|                  |     |                  |     |                  |
-|  NudeNet Worker  +---->+  BayNet Service  +---->+  Review Dashboard|
-|  (Detection +    |     |  (Persist, Queue |     |  (SVG Annotator, |
-|   Region Blur)   |     |   Priority, API) |     |   Batch Review)  |
-|                  |     |                  |     |                  |
-+------------------+     +--------+---------+     +------------------+
-                                  |
-                                  v
-                         +------------------+
-                         |                  |
-                         |  COCO/YOLO Export |
-                         |  (Training Data) |
-                         |                  |
-                         +------------------+
+@baynet/sdk (core)
+  ├── DatabaseAdapter  ←  @baynet/adapter-d1, @baynet/adapter-postgres
+  ├── StorageAdapter   ←  @baynet/adapter-r2, @baynet/adapter-s3
+  ├── AuthAdapter      ←  simpleAuth() or custom
+  └── DetectionBackend ←  nudenetBackend(), geminiSafetyBackend(), custom
+
+@baynet/react (dashboard)
+  └── BayNetDataSource ←  your API routes
 ```
 
 ## Features
 
-### Detection Persistence
-- Captures NudeNet bounding boxes, class labels, confidence scores, and processing time
-- Stores both original and blurred images in object storage
-- Supports multiple source types: preview frames, video checkpoints, completed videos, user reports
+- **7 detection categories, 33 class labels** — nudity, violence, weapons, hate symbols, drugs, CSAM indicators, text-in-image
+- **Active learning priority queue** — uncertain predictions (low confidence) reviewed first, user reports boosted
+- **SVG bounding box annotator** — confirm, reject, draw missed detections, correct classes/boxes
+- **COCO JSON export** — human corrections applied (FP removal, box/class corrections, missed detection additions)
+- **CSAM hook enforcement** — SDK refuses to initialize without mandatory reporting hook
+- **Batch review** — approve/reject up to 100 detections at once
+- **Audit logging** — every admin action tracked with user, target, IP, timestamp
+- **Fail-closed detection** — backend failures block content rather than silently passing
 
-### Active Learning Priority Queue
-- Prioritizes uncertain predictions (low confidence) for human review -- most valuable as training corrections
-- Boosts priority for: user-reported content (+50), AI safety flags (+30), wide confidence spread (+15)
-- Caps at 100, sorted by priority then age (FIFO fairness within same priority tier)
+## Detection Backends
 
-### Admin Review Dashboard
-- Blurred thumbnail grid with batch select/approve/reject
-- Full SVG bounding box annotator:
-  - Confirm or mark false positive on each NudeNet region
-  - Click-drag to draw new boxes for missed detections
-  - Class dropdown for each drawn box (NudeNet's 6 classes)
-  - Per-region and per-review notes
-- Stats view: pending count, false positive rate, annotation breakdown
+| Backend | Description |
+|---------|-------------|
+| `nudenetBackend({ url })` | NudeNet Flask microservice (included in `services/nudenet-blur/`) |
+| `geminiSafetyBackend({ apiKey })` | Google Gemini safety classifier |
+| Custom | Implement the `DetectionBackend` interface |
 
-### COCO Training Data Export
-- Exports reviewed detections as COCO JSON format
-- Applies human corrections: FP removal, box/class corrections, missed detection additions
-- Includes image dimensions for full COCO spec compliance
-- Categories match NudeNet classes: `FEMALE_BREAST_EXPOSED`, `MALE_BREAST_EXPOSED`, `FEMALE_GENITALIA_EXPOSED`, `MALE_GENITALIA_EXPOSED`, `BUTTOCKS_EXPOSED`, `ANUS_EXPOSED`
+## Adapters
 
-### Security
-- Admin role gating via configurable allowlist (`ADMIN_USER_IDS`)
-- Original unblurred images hard-blocked from API responses (only accessible via COCO export)
-- Timing-safe secret comparison on webhook endpoints
-- Input validation on all annotation fields (class allowlist, bounding box bounds, batch size limits)
-- Generic error messages to clients (full errors logged server-side only)
-- Admin audit log with user, action, target IDs, IP address, timestamp
+### Database
 
-## Database Schema
+| Adapter | Status |
+|---------|--------|
+| `@baynet/adapter-d1` | Published |
+| `@baynet/adapter-postgres` | Coming soon |
+| Custom | Implement `DatabaseAdapter` |
 
-### `nudenet_detections`
-One row per NudeNet analysis of an image/frame.
+### Storage
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | text PK | nanoid |
-| `scene_id` | text FK | Source scene (nullable) |
-| `project_id` | text FK | Source project (nullable) |
-| `source_type` | enum | `preview`, `checkpoint`, `reference`, `completed_video`, `reported` |
-| `source_key` | text | Object storage key for original image |
-| `blurred_key` | text | Object storage key for blurred version |
-| `regions` | JSON text | `Array<{ class, score, box: [x,y,w,h] }>` |
-| `has_explicit` | boolean | Whether NudeNet found explicit content |
-| `image_width` | integer | Original image width (for COCO export) |
-| `image_height` | integer | Original image height |
-| `region_count` | integer | Number of detected regions |
-| `max_confidence` | real | Highest confidence score |
-| `min_confidence` | real | Lowest confidence score |
-| `review_status` | enum | `pending`, `approved`, `corrected`, `rejected`, `skipped` |
-| `review_priority` | integer | 0-100, higher = review first |
-| `reviewed_by` | text | Reviewer user ID |
+| Adapter | Status |
+|---------|--------|
+| `@baynet/adapter-r2` | Published |
+| `@baynet/adapter-s3` | Coming soon |
+| Custom | Implement `StorageAdapter` |
 
-### `detection_annotations`
-Human corrections on NudeNet detections.
+## NudeNet Microservice
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | text PK | nanoid |
-| `detection_id` | text FK | Parent detection (cascade delete) |
-| `annotation_type` | enum | `confirm`, `false_positive`, `missed_detection`, `box_correction`, `class_correction` |
-| `original_region_index` | integer | Which NudeNet region this annotates (null for missed_detection) |
-| `corrected_class` | text | Human-provided correct class label |
-| `corrected_box` | JSON text | `[x, y, width, height]` |
-| `notes` | text | Reviewer notes |
+A ready-to-deploy Flask microservice for NudeNet detection + region blur is included in [`services/nudenet-blur/`](services/nudenet-blur/).
 
-### `training_exports`
-Tracks exported datasets.
+## Development
 
-### `admin_audit_log`
-Tamper-evident log of all admin moderation actions.
+```bash
+# Install dependencies
+npm install
 
-## API Endpoints
+# Build all packages
+npx turbo build
 
-All endpoints require admin authentication.
+# Run all tests
+npx turbo test
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/moderation` | Review queue (paginated, filterable by status/source/confidence) |
-| GET | `/moderation?action=stats` | Aggregate dashboard metrics |
-| POST | `/moderation` `{action:"batch-review"}` | Batch approve/reject (max 100) |
-| POST | `/moderation` `{action:"export"}` | Export COCO training data (max 500 detections) |
-| GET | `/moderation/detection/:id` | Full detection detail with regions + annotations |
-| POST | `/moderation/detection/:id` | Submit review with annotations |
-
-## Integration
-
-BayNet integrates into content generation pipelines via a single function call:
-
-```typescript
-import { blurWithNudeNet } from "./qa-vision";
-
-// Call NudeNet with moderation context -- detection data persisted automatically
-const result = await blurWithNudeNet(imageBase64, {
-  sourceType: "preview",
-  sceneId: "sc_abc",
-  projectId: "proj_123",
-  userId: "user_456",
-});
-// result.blurred = base64 blurred image
-// result.regions = NudeNet detection data
-// Detection automatically persisted to DB + object storage (fire-and-forget)
+# Build + test in one shot
+npx turbo build test
 ```
-
-## Tech Stack
-
-- **Detection**: NudeNet (ONNX model, Flask microservice)
-- **Database**: SQLite / Cloudflare D1 (via Drizzle ORM)
-- **Storage**: Cloudflare R2 / S3-compatible
-- **API**: Cloudflare Workers / Node.js
-- **Dashboard**: React + Tailwind + SVG
-- **Export**: COCO JSON format (YOLO planned)
-
-## Roadmap
-
-- [ ] YOLO export format
-- [ ] Expand beyond nudity: illegal content categories (violence, CSAM indicators, weapons, drugs)
-- [ ] BayNet SDK (npm package) for drop-in integration
-- [ ] Standalone BayNet web dashboard (decoupled from host app)
-- [ ] Pluggable detection backends (custom models, Google Vision, AWS Rekognition)
-- [ ] Pluggable storage backends (S3, GCS, local filesystem)
-- [ ] Inter-annotator agreement metrics
-- [ ] Confidence calibration dashboard
-- [ ] Webhook notifications for high-priority detections
-- [ ] NudeNet fine-tuning pipeline (train on exported COCO data)
 
 ## Origin
 

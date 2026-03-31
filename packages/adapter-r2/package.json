@@ -2,6 +2,11 @@
   "name": "@baynet/adapter-r2",
   "version": "0.1.0",
   "description": "Cloudflare R2 storage adapter for BayNet SDK",
+  "repository": { "type": "git", "url": "https://github.com/ZOMBAY-AI/baynet.git", "directory": "packages/adapter-r2" },
+  "homepage": "https://github.com/ZOMBAY-AI/baynet/tree/main/packages/adapter-r2#readme",
+  "bugs": { "url": "https://github.com/ZOMBAY-AI/baynet/issues" },
+  "keywords": ["baynet", "content-moderation", "cloudflare", "r2", "storage-adapter", "object-storage"],
+  "author": "ZOMBAY AI <engineering@zombay.net>",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +22,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@baynet/sdk": "*"
+    "@baynet/sdk": "^0.1.0"
   },
   "devDependencies": {
     "@baynet/tsconfig": "*",

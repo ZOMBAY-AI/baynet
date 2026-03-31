@@ -2,6 +2,26 @@
   "name": "@baynet/react",
   "version": "0.1.0",
   "description": "React dashboard components for BayNet content moderation",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZOMBAY-AI/baynet.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/ZOMBAY-AI/baynet/tree/main/packages/react#readme",
+  "bugs": {
+    "url": "https://github.com/ZOMBAY-AI/baynet/issues"
+  },
+  "keywords": [
+    "baynet",
+    "content-moderation",
+    "react",
+    "dashboard",
+    "moderation-ui",
+    "annotation",
+    "bounding-box",
+    "hitl"
+  ],
+  "author": "ZOMBAY AI <engineering@zombay.net>",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +37,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@baynet/sdk": "*"
+    "@baynet/sdk": "^0.1.0"
   },
   "peerDependencies": {
     "react": ">=18.0.0"
