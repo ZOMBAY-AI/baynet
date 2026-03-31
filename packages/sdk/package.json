@@ -1,0 +1,32 @@
+{
+  "name": "@baynet/sdk",
+  "version": "0.1.0",
+  "description": "Open-source HITL content moderation + AI training data pipeline",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "nanoid": "^5.1.0"
+  },
+  "devDependencies": {
+    "@baynet/tsconfig": "*",
+    "@types/node": "^25.5.0",
+    "typescript": "^5.8.0",
+    "vitest": "^4.1.0"
+  },
+  "license": "MIT"
+}
